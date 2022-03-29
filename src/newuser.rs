@@ -1,5 +1,10 @@
+//Renders a registration window after create new in login.rs is clicked
+
+#[path = "./pasgen.rs"]
+mod pasgen;
 pub mod register {
 
+use super::pasgen::generator;
 use egui::{FontId, RichText, Color32};
 
 	#[derive(Default)]
@@ -93,7 +98,9 @@ use egui::{FontId, RichText, Color32};
                 ui.add_space(220.0);
 
                 if ui.button("Generate Password").clicked() {
-
+                	pass = generator::call_gen();
+                	let tmp = &pass;
+                	ch = tmp.to_string();
                 }
                 ui.end_row();
                 ui.add_space(220.0);

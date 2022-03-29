@@ -1,3 +1,5 @@
+//Sets main style for Central panel in main.rs
+
 pub mod styling{
 use eframe::egui;
 use egui::vec2;
