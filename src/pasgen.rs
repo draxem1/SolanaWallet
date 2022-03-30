@@ -57,4 +57,26 @@ use rand::Rng;
 
         *character
     }
+
+    fn check(x: &str, y: Vec<char>) -> bool {
+            let mut instr = false;
+            let length = y.len();
+            let mut count = 0;
+        
+        'crack: loop{
+            let tmp = &y[count];
+
+            for c in x.chars(){
+                if c == *tmp {
+                 instr = true; 
+                 break 'crack;
+                }
+            }
+            count += 1;
+            if count >= length{
+                    break;    
+            }
+        }
+        instr
+    }
 }
