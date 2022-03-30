@@ -10,20 +10,9 @@ use rand::Rng;
         upper_case: [char;26],
     }
 
-    pub fn call_gen() -> String{
-        let password_length: u32 = rand::thread_rng().gen_range(8..24);
-        let mut password = String::new();
-
-            for _n in 1..password_length{
-                password.push(random_character());
-            }
-        password
-    }
-
-    fn random_character() -> char {
-        let selector: u32 = rand::thread_rng().gen_range(0..4);
-
-        let elements = Elements {
+    impl Elements{
+        fn new() -> Self {
+            Self {
             alphabet: ['a','b','c','d','e','f','g','h','i','j','k','l','m','n',
                         'o','p','q','r','s','t','u','v','w','x','y','z'],
 
@@ -32,8 +21,32 @@ use rand::Rng;
             special: ['!','@','$','%','&','=','?'],
 
             upper_case: ['A','B','C','D','E','F','G','H','I','J','K','L','O','M','N','P','Q','R'
-                        ,'S','T','U','V','W','X','Y','Z'],
-        };
+                        ,'S','T','U','V','W','X','Y','Z'], 
+            }
+        }
+    }
+
+    pub fn call_gen() -> String{
+        let password_length: u32 = rand::thread_rng().gen_range(14..24);
+        let mut password = String::new();
+
+        loop {
+            for _n in 1..password_length{
+                password.push(random_character());
+            }
+            let valid = meets_requirments(&password);
+
+            match valid {
+                true => break,
+                false => { password.clear(); continue},
+            }
+        }
+        password
+    }
+
+    fn random_character() -> char {
+        let selector: u32 = rand::thread_rng().gen_range(0..4);
+        let elements = Elements::new();
         let end_range;
 
         match selector {
@@ -58,24 +71,43 @@ use rand::Rng;
         *character
     }
 
-    fn check(x: &str, y: Vec<char>) -> bool {
+//checks generated password if it contains (uppercase, special, lowercase, and number)
+    fn meets_requirments(x: &str) -> bool {
+            let elements = Elements::new();
             let mut instr = false;
-            let length = y.len();
-            let mut count = 0;
+            let mut has_item = vec![false, false, false, false];
         
-        'crack: loop{
-            let tmp = &y[count];
-
-            for c in x.chars(){
-                if c == *tmp {
-                 instr = true; 
-                 break 'crack;
+        for i in x.chars() {
+            for c in elements.alphabet {
+                if c == i {
+                    has_item[0] = true;
+                    break;
                 }
             }
-            count += 1;
-            if count >= length{
-                    break;    
+            for c in elements.numbers {
+                if c == i {
+                    has_item[1] = true;
+                    break;
+                }
             }
+             for c in elements.special {
+                if c == i {
+                    has_item[2] = true;
+                    break;
+                }
+            }
+             for c in elements.upper_case{
+                if c == i {
+                    has_item[3] = true;
+                    break;
+                }
+            }
+        }
+        
+        let items = has_item.contains(&false);
+
+        if items == false{
+            instr = true;
         }
         instr
     }
