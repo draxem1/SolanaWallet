@@ -94,6 +94,7 @@ use egui::{FontId, RichText, Color32};
             });
 
             egui::Grid::new("Generate")
+            	.spacing([0.0,20.0])
                 .show(ui, |ui| {
                 ui.add_space(220.0);
 
