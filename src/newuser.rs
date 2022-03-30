@@ -7,6 +7,14 @@ pub mod register {
 use super::pasgen::generator;
 use egui::{FontId, RichText, Color32};
 
+	trait Validate{
+		fn data_on_file(&self) -> String;
+		fn username_exist(&self, data: &str) -> bool;
+		fn valid_phone(&self, phone: &str) -> bool;
+		fn email(&self, email: &str) -> bool;
+		fn password_check(&self, password: &str) -> bool;
+	}
+
 	#[derive(Default)]
 	pub struct User{
 		first_name: String,
@@ -107,7 +115,8 @@ use egui::{FontId, RichText, Color32};
                 ui.add_space(220.0);
           
                 if ui.button("Submit").clicked() {
-
+                	let valid = self.data_on_file();
+                	println!("{}",valid);
                 }
             });
             self.first_name = first;
@@ -119,4 +128,40 @@ use egui::{FontId, RichText, Color32};
             self.check = ch;
 		}
 	}
+
+	impl Validate for User{
+	 	fn data_on_file(&self) -> String {
+	 		use std::io::Read;
+			use std::fs::File;
+			use std::error::Error;
+			//use std::fs;
+
+	 		let openfile = |file: &str| -> Result<String, Box<dyn Error>> {
+	 			let mut file = File::open(file)?;
+	    		let mut contents = String::new();
+
+	    		file.read_to_string(&mut contents).expect("No Value to Return!!!");
+
+	    		Ok(contents)
+	 		};
+
+	 		let data = match openfile("data.txt") {
+	 			Ok(s) => s,
+	 			Err(_) => panic!("Cannot access Data!!"),
+	 		};
+
+	 		let user_exist = self.username_exist(&data);
+	 		println!("{}", user_exist);
+
+	 		data
+	 	}
+  		fn username_exist(&self, data: &str) -> bool {
+  			let jason = format!("{} {{",&self.username );
+  			let valid = data.contains(&jason);
+  			valid
+  		}
+  		fn valid_phone(&self, _: &str) -> bool { todo!() }
+  		fn email(&self, _: &str) -> bool { todo!() }
+  		fn password_check(&self, _: &str) -> bool { todo!() }
+ 	}
 }
