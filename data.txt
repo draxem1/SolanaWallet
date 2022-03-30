@@ -1,0 +1,7 @@
+fatass {
+		first_name: John,
+		last_name: C,
+		email: johnc@gmail.com,
+		password: dijQ89?,
+		phone: (909) 387 - 0093,
+	}
