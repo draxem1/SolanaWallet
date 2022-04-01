@@ -19,7 +19,7 @@ use std::collections::BTreeMap;
 		email: String,
 
 		#[serde(skip_serializing, skip_deserializing)]
-		username: String,
+		pub username: String,
 		password: String,
 
 		#[serde(skip_serializing, skip_deserializing)]
@@ -150,13 +150,12 @@ use std::collections::BTreeMap;
 			break;
 		}
 
-		let valid_user = list::search(valid_list, &self.username);
-
-		if valid_user {
+		if valid_list.contains_key(&self.username) {
 			println!("An account under this user name already exist!!");
 		}
 		else {
-			
+			list::add_user(valid_list, &self);
+			fs::copy("copy.txt", "list.txt").expect("Failed to copy!!");
 	    }
 	}
 }}
@@ -208,15 +207,6 @@ use std::error::Error;
 
 	    Ok(contents)
 	}
-    
-    pub fn search(list: BTreeMap<String, String>, username: &str) -> bool{
-
-		let result: bool = match list.get(username) {
-			Some(_u) => true,
-			_ => false,
-		};
-    	result
-    }
 
 	pub fn get_list(list: &str) -> Result<BTreeMap<String, String>, Box<dyn Error>> {
 		let test: BTreeMap<String, String> = serde_json::from_str(&list)?;
@@ -235,13 +225,14 @@ use std::error::Error;
 	}
 
 
-	pub fn add_user(mut list: BTreeMap<String, String>, username: &str, data: &User){
+	pub fn add_user(mut list: BTreeMap<String, String>, data: &User){
 		let serialized = serde_json::to_string(&data).unwrap();
-		list.insert(username.to_string(), serialized);
+		list.insert(data.username.to_string(), serialized);
 		let json = serde_json::to_string(&list).unwrap();
 
-		fs::write("list.txt", json).expect("Failed to add to the list!!");
+		fs::write("copy.txt", json).expect("Failed to add to the list!!");
 	}
+
 	pub fn default(){
 		let user = Copy::new();
 
@@ -250,6 +241,6 @@ use std::error::Error;
 		metadata.insert(&user.username, serialized);
 		let json = serde_json::to_string(&metadata).unwrap();
 
-		fs::write("list.txt", json).expect("Failed to write none to new file!!");
+		fs::write("list.txt", json).unwrap();
 	}
 }
