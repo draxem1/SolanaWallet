@@ -135,30 +135,24 @@ use std::collections::BTreeMap;
 			list = match list::open_file("list.txt") {
 			Ok(s) => String::from(s),
 			Err(_) => {File::create("list.txt").expect("Failed to create file!!!");
-						fs::write("list.txt", b"none").expect("Failed to write none to new file!!");
+						list::default();
 						continue},	
 			};
 			break;
 		}
 
-		let valid_list: BTreeMap<String, String>;
-		loop {
-				valid_list = match list::get_list(&list) {
-				Ok(l) => l,
-				Err(_) => {list::default(); continue},
-			};
-			break;
-		}
+		let valid_list: BTreeMap<String, String> = list::get_list(&list);
 
 		if valid_list.contains_key(&self.username) {
 			println!("An account under this user name already exist!!");
 		}
 		else {
 			list::add_user(valid_list, &self);
-			fs::copy("copy.txt", "list.txt").expect("Failed to copy!!");
+			fs::copy("copy.txt", "list.txt").expect("Failed to copy");
 	    }
 	}
 }}
+
 
 pub mod list {
 
@@ -182,7 +176,7 @@ use std::error::Error;
 			password: String,
 
 			#[serde(skip_serializing, skip_deserializing)]
-			check: String,
+			_check: String,
 			phone: String,
 	}
 
@@ -194,11 +188,12 @@ use std::error::Error;
 				email: String::new(),
 				username: String::new(),
 				password: String::new(),
-				check: String::new(),
+				_check: String::new(),
 				phone: String::new(),
 			}
 		}
 	}
+
 	pub fn open_file(file: &str) -> Result<String, Box<dyn Error>> {
 	    let mut file = File::open(file)?;
 	    let mut contents = String::new();
@@ -208,22 +203,10 @@ use std::error::Error;
 	    Ok(contents)
 	}
 
-	pub fn get_list(list: &str) -> Result<BTreeMap<String, String>, Box<dyn Error>> {
-		let test: BTreeMap<String, String> = serde_json::from_str(&list)?;
-
-		Ok(test)
+	pub fn get_list(list: &str) -> BTreeMap<String, String>{
+		let test: BTreeMap<String, String> = serde_json::from_str(&list).expect("Not a valid list");
+		test
 	}
-
-	pub fn get_user(list: BTreeMap<String, String>, username: &str) -> User {
-
-		let result: User = match list.get(username) {
-			Some(u) => serde_json::from_str(&u).unwrap(),
-			_ => panic!("user exist but can't get info!!!"),
-		};
-
-    	result
-	}
-
 
 	pub fn add_user(mut list: BTreeMap<String, String>, data: &User){
 		let serialized = serde_json::to_string(&data).unwrap();

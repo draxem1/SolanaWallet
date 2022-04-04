@@ -4,7 +4,7 @@ use std::fs::File;
 use std::error::Error;
 use std::fs;
 
-	fn open_file(file: &str) -> Result<String, Box<dyn Error>> {
+	pub fn open_file(file: &str) -> Result<String, Box<dyn Error>> {
 	    let mut file = File::open(file)?;
 	    let mut contents = String::new();
 

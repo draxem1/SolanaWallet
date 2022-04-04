@@ -2,7 +2,9 @@
 
 pub mod credentials{
 use crate::file::serve;
+use std::collections::BTreeMap;
 use egui::{RichText, FontId, Color32};
+use serde::{Serialize, Deserialize};
 
     #[derive(Default)]
     pub struct Login {
@@ -61,12 +63,60 @@ use egui::{RichText, FontId, Color32};
                     serve::send_state("2");
                 }
                 if columns[3].button("Login").clicked() {
+                    let legit = check_credentials(&self);
 
+                    if legit {
+                        serve::send_state("3");
+                    }
+                    else {
+                        println!("Nope not happining!!");
+                    }
                 }
                 });
             });
                 self.username = user;
                 self.password = pass;
         }
+
+    }
+
+    #[derive(Serialize, Deserialize, Debug, Default)]
+        struct Copy{
+            first_name: String,
+            last_name: String,
+            email: String,
+
+            #[serde(skip_serializing, skip_deserializing)]
+            _username: String,
+            password: String,
+
+            #[serde(skip_serializing, skip_deserializing)]
+            _check: String,
+            phone: String,
+    }
+
+    fn check_credentials(data: &Login) -> bool {
+
+        let mut valid = false;
+        let list = match serve::open_file("copy.txt") {
+            Ok(s) => String::from(s),
+            Err(e) => e.to_string(),
+        };
+
+        let test: BTreeMap<String, String> = serde_json::from_str(&list).expect("Not a valid list");
+
+        if test.contains_key(&data.username) {
+
+            let result: Copy = match test.get(&data.username) {
+                Some(u) => serde_json::from_str(&u).unwrap(),
+                _ => panic!("user exist but can't get info!!!"),
+            };
+
+
+            if result.password == data.password{
+                valid = true;
+            }
+        }
+        valid
     }
 }
