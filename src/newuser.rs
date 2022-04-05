@@ -11,6 +11,11 @@ use egui::{FontId, RichText, Color32};
 use std::fs;
 use std::fs::File;
 use std::collections::BTreeMap;
+use crate::file::serve;
+
+	trait Check{
+		fn legit_pass(&self) -> bool;
+	}
 
 	#[derive(Serialize, Deserialize, Debug, Default)]
 	pub struct User{
@@ -114,10 +119,17 @@ use std::collections::BTreeMap;
                 }
                 ui.end_row();
                 ui.add_space(220.0);
-          
+          		
                 if ui.button("Submit").clicked() {
-                	self.save();
+                	if self.legit_pass() {
+                		self.save();
+                		serve::send_state("1");
+                	}
+                	else{
+  
+                	}
                 }
+
             });
             self.first_name = first;
             self.last_name = last;
@@ -151,7 +163,15 @@ use std::collections::BTreeMap;
 			fs::copy("copy.txt", "list.txt").expect("Failed to copy");
 	    }
 	}
-}}
+}
+
+	impl Check for User{
+		fn legit_pass(&self) -> bool{
+			let validated = generator::meets_requirments(&self.password);
+			validated
+		}
+	}
+}
 
 
 pub mod list {
@@ -165,19 +185,19 @@ use std::fs::File;
 use std::fs;
 use std::error::Error;
 
-		#[derive(Serialize, Deserialize, Debug, Default)]
-		struct Copy{
-			first_name: String,
-			last_name: String,
-			email: String,
+	#[derive(Serialize, Deserialize, Debug, Default)]
+	struct Copy{
+		first_name: String,
+		last_name: String,
+		email: String,
 
-			#[serde(skip_serializing, skip_deserializing)]
-			username: String,
-			password: String,
+		#[serde(skip_serializing, skip_deserializing)]
+		username: String,
+		password: String,
 
-			#[serde(skip_serializing, skip_deserializing)]
-			_check: String,
-			phone: String,
+		#[serde(skip_serializing, skip_deserializing)]
+		_check: String,
+		phone: String,
 	}
 
 	impl Copy {

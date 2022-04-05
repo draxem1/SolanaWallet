@@ -72,7 +72,7 @@ use rand::Rng;
     }
 
 //checks generated password if it contains (uppercase, special, lowercase, and number)
-    fn meets_requirments(x: &str) -> bool {
+    pub fn meets_requirments(x: &str) -> bool {
             let elements = Elements::new();
             let mut instr = false;
             let mut has_item = vec![false, false, false, false];

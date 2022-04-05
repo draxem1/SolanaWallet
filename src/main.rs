@@ -1,5 +1,6 @@
 mod login;
 mod newuser;
+mod wallet;
 
 #[path = "./subs/styles.rs"]
 mod styles;
@@ -11,6 +12,7 @@ use file::serve;
 
 use newuser::register::User;
 use login::credentials::Login;
+use wallet::wall;
 use eframe::{epi, egui};
 
 
@@ -46,9 +48,11 @@ impl epi::App for State{
                         self.state1.login_screen(ui); });},
             2 => {egui::CentralPanel::default().frame(my_frame).show(ctx, |ui| {
                         self.state2.user_screen(ui); });},
+            3 => {egui::CentralPanel::default().frame(my_frame).show(ctx, |ui| {
+                        wall::wallet_screen(ui); });},
                 _ => (),
             }
-   }
+    }
 
    fn on_exit(&mut self){
         serve::send_state("1");

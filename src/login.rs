@@ -6,7 +6,7 @@ use std::collections::BTreeMap;
 use egui::{RichText, FontId, Color32};
 use serde::{Serialize, Deserialize};
 
-    #[derive(Default)]
+    #[derive(Default, Debug)]
     pub struct Login {
         username: String,
         password: String,
@@ -95,6 +95,7 @@ use serde::{Serialize, Deserialize};
             phone: String,
     }
 
+//Pulls info from file into a struct then does check
     fn check_credentials(data: &Login) -> bool {
 
         let mut valid = false;
