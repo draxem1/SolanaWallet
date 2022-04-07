@@ -10,6 +10,7 @@ use serde::{Serialize, Deserialize};
     pub struct Login {
         username: String,
         password: String,
+        message: String,
     }
 
     impl Login{
@@ -17,6 +18,7 @@ use serde::{Serialize, Deserialize};
             Self {
                 username: String::new(),
                 password: String::new(),
+                message: String::new(),
             }
         }
 
@@ -69,10 +71,16 @@ use serde::{Serialize, Deserialize};
                         serve::send_state("3");
                     }
                     else {
-                        println!("Nope not happining!!");
+                        self.message = String::from("Username & or Password Incorrect!!");
                     }
                 }
+
                 });
+
+                ui.end_row();
+                ui.end_row();
+                ui.label(RichText::new(&self.message).size(25.0));
+
             });
                 self.username = user;
                 self.password = pass;
